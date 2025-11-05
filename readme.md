@@ -85,7 +85,7 @@ You can get region extracts from [Geofabrik](https://download.geofabrik.de/).
 Example (Brazil):
 ```bash
 mkdir -p data
-wget -O data/region-latest.osm.pbf https://download.geofabrik.de/south-america/brazil-latest.osm.pbf
+wget -O data/brazil-latest.osm.pbf https://download.geofabrik.de/south-america/brazil-latest.osm.pbf
 ```
 
 ---
