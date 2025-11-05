@@ -17,8 +17,6 @@ It allows you to **convert postal codes → latitude/longitude**, and **query OS
 
 ## Architecture Overview
 
-## Architecture Overview
-
 ```mermaid
 graph TD
 
