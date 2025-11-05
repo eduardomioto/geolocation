@@ -26,8 +26,7 @@ services:
       - DB_NAME=osm
     volumes:
       - ./data:/data
-    command: >
-      bash -c "python3 /app/importer.py /data/brazil-251104.osm.pbf"
+    command: ["/data/brazil-251104.osm.pbf"]
 
   api:
     build: ./api
