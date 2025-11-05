@@ -74,9 +74,13 @@ osm-geocoder/
 ### 1. Download an OSM Extract
 You can get region extracts from [Geofabrik](https://download.geofabrik.de/).
 
-- https://planet.openstreetmap.org/pbf/planet-latest.osm.pbf (80gb)
-- https://download.geofabrik.de/south-america/brazil-latest.osm.pbf (1.8gb)
-- https://download.geofabrik.de/europe-latest.osm.pbf (31gb)
+- [Planet OSM (planet-latest.osm.pbf, ~80 GB)](https://planet.openstreetmap.org/pbf/planet-latest.osm.pbf)
+- [Brazil, ~1.8 GB](https://download.geofabrik.de/south-america/brazil-latest.osm.pbf)
+- [Europe, ~31 GB](https://download.geofabrik.de/europe-latest.osm.pbf)
+- [South America](https://download.geofabrik.de/south-america.html)
+- [Europe](https://download.geofabrik.de/europe.html)
+- [North America](https://download.geofabrik.de/north-america.html)
+- [Australia & Oceania](https://download.geofabrik.de/australia-oceania.html)
 
 Example (Brazil):
 ```bash
