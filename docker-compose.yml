@@ -1,0 +1,48 @@
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    container_name: osm_postgis
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: osmuser
+      POSTGRES_PASSWORD: osmpass
+      POSTGRES_DB: osm
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - osm_data:/var/lib/postgresql/data
+
+  importer:
+    build: ./importer
+    container_name: osm_importer
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=osmuser
+      - DB_PASS=osmpass
+      - DB_NAME=osm
+    volumes:
+      - ./data:/data
+    command: >
+      bash -c "python3 /app/importer.py /data/brazil-251104.osm.pbf"
+
+  api:
+    build: ./api
+    container_name: osm_api
+    restart: unless-stopped
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=osmuser
+      - DB_PASS=osmpass
+      - DB_NAME=osm
+    ports:
+      - "3000:3000"
+
+volumes:
+  osm_data:
