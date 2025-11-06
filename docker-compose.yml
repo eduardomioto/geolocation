@@ -1,41 +1,6 @@
+version: '3.8'
+
 services:
-  db:
-    image: postgis/postgis:16-3.4
-    container_name: osm_postgis
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: osmuser
-      POSTGRES_PASSWORD: osmpass
-      POSTGRES_DB: osm
-    ports:
-      - "5432:5432"
-    volumes:
-      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
-      - osm_data:/var/lib/postgresql/data
-
-  importer:
-    build: ./importer
-    container_name: osm_importer
-    depends_on:
-      - db
-    environment:
-      - DB_HOST=db
-      - DB_PORT=5432
-      - DB_USER=osmuser
-      - DB_PASS=osmpass
-      - DB_NAME=osm
-    volumes:
-      - ./data:/data                # External OSM files go here
-      - ./output:/tmp   
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"          # GeoJSON and temp output files
-    command: ["/data/brazil-latest.osm.pbf"]
-    mem_limit: 8g          # <-- add this
-    mem_reservation: 4g    # optional soft limit
-
   api:
     build: ./api
     container_name: osm_api
@@ -51,5 +16,56 @@ services:
     ports:
       - "3000:3000"
 
+  db:
+    image: postgis/postgis:16-3.4
+    container_name: osm_postgis
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: osmuser
+      POSTGRES_PASSWORD: osmpass
+      POSTGRES_DB: osm
+    ports:
+      - "5432:5432"
+    volumes:
+      - osm_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U osmuser -d osm"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    command: >
+      postgres
+      -c max_wal_size=4GB
+      -c checkpoint_timeout=15min
+      -c shared_buffers=2GB
+      -c work_mem=256MB
+      -c maintenance_work_mem=1GB
+      -c wal_compression=on
+      -c random_page_cost=1.1
+
+  osm_importer:
+    image: iboates/osm2pgsql:latest
+    depends_on:
+      db:
+        condition: service_healthy
+    network_mode: service:db
+    environment:
+      - PGPASSWORD=osmpass
+    volumes:
+      - ./data/brazil-latest.osm.pbf:/data.osm.pbf
+    command: >-
+      osm2pgsql
+      --create
+      --slim
+      -j
+      --number-processes 8
+      --cache 4096
+      -d osm
+      -U osmuser
+      -H 127.0.0.1
+      -P 5432
+      /data.osm.pbf
+      
 volumes:
   osm_data:
