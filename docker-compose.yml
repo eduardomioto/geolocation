@@ -25,8 +25,14 @@ services:
       - DB_PASS=osmpass
       - DB_NAME=osm
     volumes:
-      - ./data:/data
-    command: ["/data/brazil-251104.osm.pbf"]
+      - ./data:/data                # External OSM files go here
+      - ./output:/tmp   
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"          # GeoJSON and temp output files
+    command: ["/data/brazil-latest.osm.pbf"]
 
   api:
     build: ./api

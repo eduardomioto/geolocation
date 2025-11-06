@@ -1,17 +1,27 @@
+# Use a slim Python image
 FROM python:3.11-slim
 
-RUN apt-get update && apt-get install -y \
-    osmium-tool \
-    libpq-dev \
-    gcc \
-    g++ \
-    && rm -rf /var/lib/apt/lists/*
-
+# Set work directory
 WORKDIR /app
 
-COPY requirements.txt ./
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    osmium-tool \
+    gdal-bin \
+    postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements and install dependencies
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY importer.py ./
+# Copy application source
+COPY . .
 
-ENTRYPOINT ["python3", "/app/importer.py"]
+# Create data and temp directories
+RUN mkdir -p /data /tmp
+
+# Ensure logs show immediately (no buffering)
+ENV PYTHONUNBUFFERED=1
+
+ENTRYPOINT ["python3", "/app/main.py"]

@@ -1,2 +1,6 @@
 /api/node_modules
 *.pbf
+/.idea
+/importer/.idea
+*.geojson
+/importer/__pycache__
