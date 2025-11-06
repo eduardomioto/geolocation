@@ -37,7 +37,7 @@ app.get("/lookup", async (req, res) => {
   if (!postal) return res.status(400).json({ error: "Missing ?postal parameter" });
   try {
     const rows = await query(
-      "SELECT postcode, lat, lon FROM postal_lookup WHERE postcode = $1",
+      "SELECT lon, lat, cep FROM cep_to_coords($1)",
       [postal]
     );
     if (!rows.length) return res.status(404).json({ message: "Postal code not found" });
@@ -48,43 +48,10 @@ app.get("/lookup", async (req, res) => {
   }
 });
 
-// Node info
-app.get("/node/:id", async (req, res) => {
-  try {
-    const rows = await query("SELECT * FROM osm_nodes WHERE id = $1", [req.params.id]);
-    if (!rows.length) return res.status(404).json({ message: "Node not found" });
-    res.json(rows[0]);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// Way info
-app.get("/way/:id", async (req, res) => {
-  try {
-    const rows = await query("SELECT * FROM osm_ways WHERE id = $1", [req.params.id]);
-    if (!rows.length) return res.status(404).json({ message: "Way not found" });
-    res.json(rows[0]);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// Relation info
-app.get("/relation/:id", async (req, res) => {
-  try {
-    const rows = await query("SELECT * FROM osm_relations WHERE id = $1", [req.params.id]);
-    if (!rows.length) return res.status(404).json({ message: "Relation not found" });
-    res.json(rows[0]);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
 app.get("/", (_, res) => {
   res.json({
     message: "OSM Geocoder API",
-    endpoints: ["/lookup?postal=XXXXX", "/node/:id", "/way/:id", "/relation/:id"],
+    endpoints: ["/lookup?postal=XXXXX"],
   });
 });
 

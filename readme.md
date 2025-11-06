@@ -184,6 +184,7 @@ CREATE INDEX idx_postal ON postal_lookup(postcode);
 - [osmpy Package](https://pypi.org/project/osmpy/)
 - [osmium-tool](https://osmcode.org/osmium-tool/)
 - [Geofabrik Extracts](https://download.geofabrik.de/)
+- [osm2pgsql](https://github.com/iboates/osm-utilities-docker/tree/master/osm2pgsql)
 
 ---
 
