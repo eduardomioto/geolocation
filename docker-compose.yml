@@ -33,6 +33,8 @@ services:
         max-size: "10m"
         max-file: "3"          # GeoJSON and temp output files
     command: ["/data/brazil-latest.osm.pbf"]
+    mem_limit: 8g          # <-- add this
+    mem_reservation: 4g    # optional soft limit
 
   api:
     build: ./api
